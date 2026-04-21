@@ -28,5 +28,14 @@ export function useDecks() {
     commit(decks.map(d => d.id === id ? { ...d, favorite: !d.favorite } : d))
   }, [decks, commit])
 
-  return { decks, addDeck, deleteDeck, toggleFavorite }
+  const updateBestScore = useCallback((id, gridId, score) => {
+    commit(decks.map(d => {
+      if (d.id !== id) return d
+      const cur = d.bestScores[gridId]
+      const better = !cur || score.moves < cur.moves || (score.moves === cur.moves && score.time < cur.time)
+      return better ? { ...d, bestScores: { ...d.bestScores, [gridId]: score } } : d
+    }))
+  }, [decks, commit])
+
+  return { decks, addDeck, deleteDeck, toggleFavorite, updateBestScore }
 }
