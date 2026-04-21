@@ -17,6 +17,19 @@ export const CARD_THEMES = {
   },
 }
 
+export const GRID_SIZES = [
+  { id: 'easy',   label: 'Easy',   icon: '😊', cols: 4, pairs: 8  },
+  { id: 'medium', label: 'Medium', icon: '😤', cols: 6, pairs: 18 },
+  { id: 'hard',   label: 'Hard',   icon: '😰', cols: 8, pairs: 32 },
+]
+
+export const CARD_STYLES = [
+  { id: 'classic', label: 'Classic', preview: '🃏' },
+  { id: 'neon',    label: 'Neon',    preview: '💡' },
+  { id: 'wooden',  label: 'Wooden',  preview: '🪵' },
+  { id: 'ocean',   label: 'Ocean',   preview: '🌊' },
+]
+
 export function generateCards(cardTheme, pairs) {
   const emojis = CARD_THEMES[cardTheme].emojis.slice(0, pairs)
   const cards = emojis.flatMap((emoji, i) => [
