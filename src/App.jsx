@@ -7,7 +7,7 @@ import GameSettings from './components/GameSettings'
 import GameBoard from './components/GameBoard'
 
 export default function App() {
-  const [view, setView] = useState('decks')
+  const [view, setView] = useState('decks') // decks | settings | game
   const [selectedDeck, setSelectedDeck] = useState(null)
   const [gameConfig, setGameConfig] = useState(null)
   const [theme, setTheme] = useState(() => loadSettings().theme || 'light')
@@ -30,6 +30,7 @@ export default function App() {
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
         onHome={handleBack}
         currentView={view}
+        onMultiplayer={() => alert('Multiplayer coming soon!')}
       />
       <main className="main-content">
         {view === 'decks' && (
