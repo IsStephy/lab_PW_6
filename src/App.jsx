@@ -5,9 +5,10 @@ import Header from './components/Header'
 import DeckManager from './components/DeckManager'
 import GameSettings from './components/GameSettings'
 import GameBoard from './components/GameBoard'
+import LobbyScreen from './components/LobbyScreen'
 
 export default function App() {
-  const [view, setView] = useState('decks') // decks | settings | game
+  const [view, setView] = useState('decks') // decks | settings | game | lobby
   const [selectedDeck, setSelectedDeck] = useState(null)
   const [gameConfig, setGameConfig] = useState(null)
   const [theme, setTheme] = useState(() => loadSettings().theme || 'light')
@@ -30,7 +31,7 @@ export default function App() {
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
         onHome={handleBack}
         currentView={view}
-        onMultiplayer={() => alert('Multiplayer coming soon!')}
+        onMultiplayer={() => setView('lobby')}
       />
       <main className="main-content">
         {view === 'decks' && (
@@ -43,6 +44,9 @@ export default function App() {
         {view === 'game' && selectedDeck && gameConfig && (
           <GameBoard deck={selectedDeck} gridSize={gameConfig.gridSize} cardStyle={gameConfig.cardStyle}
             onBack={handleBack} onWin={handleWin} />
+        )}
+        {view === 'lobby' && (
+          <LobbyScreen decks={decks} onBack={() => setView('decks')} />
         )}
       </main>
     </div>
