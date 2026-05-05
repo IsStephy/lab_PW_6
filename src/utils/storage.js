@@ -1,5 +1,7 @@
 const DECKS_KEY = 'mcg-decks'
 const SETTINGS_KEY = 'mcg-settings'
+const REPLAYS_KEY = 'mcg-replays'
+const MAX_REPLAYS = 30
 
 function defaultDecks() {
   return [
@@ -25,4 +27,20 @@ export function loadSettings() {
 
 export function saveSettings(s) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(s))
+}
+
+export function loadReplays() {
+  try { return JSON.parse(localStorage.getItem(REPLAYS_KEY)) || [] }
+  catch { return [] }
+}
+
+export function saveReplay(replay) {
+  const replays = loadReplays()
+  const updated = [replay, ...replays].slice(0, MAX_REPLAYS)
+  localStorage.setItem(REPLAYS_KEY, JSON.stringify(updated))
+}
+
+export function deleteReplay(id) {
+  const replays = loadReplays().filter(r => r.id !== id)
+  localStorage.setItem(REPLAYS_KEY, JSON.stringify(replays))
 }

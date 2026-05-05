@@ -7,8 +7,8 @@ function fmt(s) {
   return `${String(Math.floor(s / 60)).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`
 }
 
-export default function GameBoard({ deck, gridSize, cardStyle, onBack, onWin }) {
-  const { cards, flippedIds, matchedPairIds, moves, time, gameStatus, isChecking, flipCard, resetGame } = useGame(deck, gridSize)
+export default function GameBoard({ deck, gridSize, cardStyle, onBack, onWin, onSaveReplay }) {
+  const { cards, flippedIds, matchedPairIds, moves, time, gameStatus, isChecking, flipCard, resetGame, getReplayData } = useGame(deck, gridSize)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-card-style', cardStyle.id)
@@ -18,6 +18,22 @@ export default function GameBoard({ deck, gridSize, cardStyle, onBack, onWin }) 
   const handleWinBack = () => {
     onWin({ moves, time, gridId: gridSize.id })
     onBack()
+  }
+
+  const handleSaveReplay = () => {
+    const { initialCards, moveLog } = getReplayData()
+    onSaveReplay({
+      id: Date.now().toString(),
+      deckName: deck.name,
+      deckTheme: deck.cardTheme,
+      gridSize,
+      cardStyle: cardStyle.id,
+      moves,
+      time,
+      playedAt: Date.now(),
+      initialCards,
+      moveLog,
+    })
   }
 
   return (
@@ -59,6 +75,7 @@ export default function GameBoard({ deck, gridSize, cardStyle, onBack, onWin }) 
           deck={deck}
           onRestart={resetGame}
           onBack={handleWinBack}
+          onSaveReplay={handleSaveReplay}
         />
       )}
     </div>

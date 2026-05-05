@@ -2,7 +2,15 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { generateCards } from '../utils/cardData'
 
 export function useGame(deck, gridSize) {
-  const [cards, setCards] = useState(() => generateCards(deck.cardTheme, gridSize.pairs))
+  const initialCardsRef = useRef(null)
+  const moveLogRef = useRef([])
+  const gameStartRef = useRef(Date.now())
+
+  const [cards, setCards] = useState(() => {
+    const generated = generateCards(deck.cardTheme, gridSize.pairs)
+    initialCardsRef.current = generated
+    return generated
+  })
   const [flippedIds, setFlippedIds] = useState([])
   const [matchedPairIds, setMatchedPairIds] = useState(new Set())
   const [moves, setMoves] = useState(0)
@@ -27,6 +35,8 @@ export function useGame(deck, gridSize) {
 
   const flipCard = useCallback((cardId) => {
     if (isChecking || flippedIds.length >= 2 || flippedIds.includes(cardId)) return
+
+    moveLogRef.current.push({ cardId, t: Date.now() - gameStartRef.current })
 
     const newFlipped = [...flippedIds, cardId]
     setFlippedIds(newFlipped)
@@ -58,7 +68,11 @@ export function useGame(deck, gridSize) {
   const resetGame = useCallback(() => {
     clearInterval(timerRef.current)
     clearTimeout(checkRef.current)
-    setCards(generateCards(deck.cardTheme, gridSize.pairs))
+    const newCards = generateCards(deck.cardTheme, gridSize.pairs)
+    initialCardsRef.current = newCards
+    moveLogRef.current = []
+    gameStartRef.current = Date.now()
+    setCards(newCards)
     setFlippedIds([])
     setMatchedPairIds(new Set())
     setMoves(0)
@@ -68,5 +82,10 @@ export function useGame(deck, gridSize) {
     timerRef.current = setInterval(() => setTime(t => t + 1), 1000)
   }, [deck, gridSize])
 
-  return { cards, flippedIds, matchedPairIds, moves, time, gameStatus, isChecking, flipCard, resetGame }
+  const getReplayData = useCallback(() => ({
+    initialCards: initialCardsRef.current,
+    moveLog: [...moveLogRef.current],
+  }), [])
+
+  return { cards, flippedIds, matchedPairIds, moves, time, gameStatus, isChecking, flipCard, resetGame, getReplayData }
 }
